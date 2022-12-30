@@ -1,4 +1,6 @@
-.o
-.bin
-.hex
-.elf
+*.o
+*.bin
+*.hex
+*.elf
+bin/
+*.a
