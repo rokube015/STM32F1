@@ -13,6 +13,10 @@ STARTUP_DIR      	= $(SYSTEM_DIR)/startup
 INCLUDE_DIR 			= ./inc
 SRC_DIR						= ./src
 OBJECT_DIR 			 	= ./obj
+BIN_DIR						= ./bin
+
+MAKEFILE_DIR:=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+ELF_PATH = $(MAKEFILE_DIR)/bin/main.elf
 
 INCLUDE_DIRS = 	-I ./ \
 								-I $(INCLUDE_DIR) \
@@ -21,7 +25,7 @@ INCLUDE_DIRS = 	-I ./ \
 							 	-I $(SYSTEM_DIR) 	\
 							 	-I $(DRIVER_INC_DIR) 
 
-MAIN_OUT = bin/main.elf
+MAIN_OUT = $(BIN_DIR)/main.elf
 MAIN_MAP = $(MAIN_OUT:%.elf=%.map)
 MAIN_BIN = $(MAIN_OUT:%.elf=%.bin)
 MAIN_HEX = $(MAIN_OUT:%.elf=%.hex)
@@ -82,7 +86,7 @@ all: $(MAIN_BIN) $(MAIN_HEX)
 
 #main
 START_UP = $(OBJECT_DIR)/startup.o
-$(MAIN_OUT): $(MAIN_OBJS) $(START_UP) $(libstm32f1)
+$(MAIN_OUT): $(MAIN_OBJS) $(START_UP) $(libstm32f1)|$(BIN_DIR)
 	$(LD) $(LDFLAGS) $(TARGET_ARCH) -o $@ $^
 
 $(MAIN_OBJS): $(wildcard *.h) $(wildcard inc/*.h)
@@ -96,11 +100,17 @@ $(MAIN_HEX): $(MAIN_OUT)
 $(libstm32f1): $(LIB_OBJS)
 	$(AR) cr $@ $^
 
-$(START_UP): $(STARTUP_SCRIPT)
+$(START_UP): $(STARTUP_SCRIPT)|$(OBJECT_DIR)
 	$(AS) -o $@ $^
-	
-$(OBJECT_DIR)/%.o: %.c
+
+$(OBJECT_DIR)/%.o: %.c|$(OBJECT_DIR)
 	$(CC) -c $(CFLAGS) -o $@ $<
+
+$(OBJECT_DIR):
+	mkdir -p $(OBJECT_DIR)
+
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
 
 clean:
 	rm -f $(SYSTEM_DIR)/*.o
@@ -111,3 +121,6 @@ clean:
 clean_lib:
 	rm $(DRIVER_SRC_DIR)/*.o
 	rm ./lib/*.a
+
+flash_elf:
+	openocd -f openocd.cfg -c "flash_elf $(ELF_PATH)"
