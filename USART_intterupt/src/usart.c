@@ -42,7 +42,7 @@ void usart1_send_byte(uint8_t Byte){
   USART_SendData(USART1, Byte);
 }
 
-void usart1_send_string(const int8_t string[]){
+void usart1_send_string(int8_t string[]){
   usart1_tx_data = (int8_t *)string;
   USART_ITConfig(USART1, USART_IT_TXE, ENABLE);
 }

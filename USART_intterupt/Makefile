@@ -67,7 +67,7 @@ AS = $(CC) -x assembler-with-cpp -c $(TAGET_ARCH)
 ASFLAGS = $(COMPILE_OPTS)
 
 LD = $(CC)
-LDFLAGS = -Wl,--gc-sections,-Map=$(MAIN_MAP),-cref -T $(LD_SCRIPT) $(INCLUDE_DIRS) -L $(LIBRARY_DIRS) 
+LDFLAGS = -Wl,--gc-sections --specs=nano.specs -u _printf_float -u _scanf_float -Wl,-Map=$(MAIN_MAP),-cref -T $(LD_SCRIPT) $(INCLUDE_DIRS) -L $(LIBRARY_DIRS) 
 
 AR = arm-none-eabi-ar
 ARFLAGS = cr

@@ -5,10 +5,11 @@
 #include "usart.h"
 #include "board.h"
 #include "nvic.h"
+#include <stdio.h>
 
 #define countof           (sizeof(a)  / sizeof(*(a)))
 
-const int8_t Welcome_Message[] = "\r\nHellow Cortex-M3/STM32 World!\r\n"
+int8_t Welcome_Message[] = "\r\nHellow Cortex-M3/STM32 World!\r\n"
                 "Expand your creativity and enjoy making.\r\n\r\n";
 
 int8_t *tx_data;
@@ -27,6 +28,11 @@ int main(void){
   //wait 1000ms
   delay_ms(1000);
   
+  int8_t buffer[256]="sss\n";
+  int a =100;
+  sprintf(buffer, "num:%d\r\n", a);  
+  usart1_send_string(buffer);
+  delay_ms(1000);
   USART_ClearITPendingBit(USART1, USART_IT_RXNE);
   USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 
@@ -37,7 +43,3 @@ int main(void){
     }
   }
 }
-
-
-
-
